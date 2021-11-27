@@ -21,7 +21,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
 
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
@@ -36,6 +35,18 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (a, b, c) = tuple;
+        let v = vec!(a,b,c);
+        for i in v.iter() {
+            if *i < (u8::MIN as u16).try_into().unwrap() || *i > (u8::MAX as u16).try_into().unwrap() {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+        return Ok(Color {
+            red: a as u8,
+            green: b as u8,
+            blue: c as u8
+        });
     }
 }
 
@@ -43,6 +54,16 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        for i in arr.iter() {
+            if *i < (u8::MIN as u16).try_into().unwrap() || *i > (u8::MAX as u16).try_into().unwrap() {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+        return Ok(Color {
+            red: arr[0] as u8,
+            green: arr[1] as u8,
+            blue: arr[2] as u8
+        });
     }
 }
 
@@ -50,6 +71,24 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        // let v = slice;
+        let mut c = 0;
+        for i in slice {
+            if *i < (u8::MIN as u16).try_into().unwrap() || *i > (u8::MAX as u16).try_into().unwrap() {
+                return Err(IntoColorError::IntConversion);
+            }
+            c += 1;
+        }
+        if c != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        return Ok(Color {
+            red: (*slice)[0] as u8,
+            green: (*slice)[1] as u8,
+            blue: (*slice)[2] as u8
+        });
+        println!("{}",(*slice)[1]);
+        // return Err(IntoColorError::IntConversion);
     }
 }
 
